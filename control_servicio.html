@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Servicio - CIS</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --cis-blue: #1a5f8a;
+    --cis-blue-light: #2980b9;
+    --cis-blue-pale: #e8f1f8;
+    --cis-blue-dark: #0e3d5c;
+    --gray-50: #f8fafc;
+    --gray-100: #f1f5f9;
+    --gray-200: #e2e8f0;
+    --gray-300: #cbd5e1;
+    --gray-400: #94a3b8;
+    --gray-500: #64748b;
+    --gray-600: #475569;
+    --gray-700: #334155;
+    --gray-800: #1e293b;
+    --red: #dc2626;
+    --green: #16a34a;
+    --amber: #f59e0b;
+    --radius: 8px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: linear-gradient(135deg, #0e3d5c 0%, #1a5f8a 40%, #2980b9 100%);
+    min-height: 100vh;
+    color: var(--gray-800);
+    padding: 20px;
+  }
+
+  .form-container {
+    max-width: 900px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+    overflow: hidden;
+    animation: slideUp 0.6s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .form-header {
+    background: linear-gradient(135deg, var(--cis-blue-dark), var(--cis-blue));
+    padding: 28px 36px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .form-header::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .logo-circle {
+    width: 64px;
+    height: 64px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--cis-blue);
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  }
+
+  .header-text h1 {
+    color: white;
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .header-text h2 {
+    color: rgba(255,255,255,0.85);
+    font-size: 22px;
+    font-weight: 300;
+    font-family: 'Libre Baskerville', serif;
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .version-badge {
+    position: absolute;
+    top: 16px;
+    right: 20px;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-weight: 500;
+  }
+
+  /* Form body */
+  .form-body { padding: 32px 36px; }
+
+  .section {
+    margin-bottom: 28px;
+  }
+
+  .section-title {
+    font-family: 'Libre Baskerville', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cis-blue);
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--cis-blue);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .icon {
+    width: 24px;
+    height: 24px;
+    background: var(--cis-blue);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+
+  /* Grid layouts */
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .grid-3 {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 14px;
+  }
+
+  .full-width { grid-column: 1 / -1; }
+
+  /* Inputs */
+  .field { display: flex; flex-direction: column; gap: 5px; }
+
+  .field label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .field input, .field textarea, .field select {
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 10px 14px;
+    font-size: 14px;
+    font-family: 'IBM Plex Sans', sans-serif;
+    transition: all 0.2s;
+    background: var(--gray-50);
+    color: var(--gray-800);
+  }
+
+  .field input:focus, .field textarea:focus, .field select:focus {
+    outline: none;
+    border-color: var(--cis-blue-light);
+    box-shadow: 0 0 0 3px rgba(41,128,185,0.15);
+    background: white;
+  }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  /* Checkboxes */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.2s;
+    background: var(--gray-50);
+    user-select: none;
+  }
+
+  .checkbox-item:hover {
+    border-color: var(--cis-blue-light);
+    background: var(--cis-blue-pale);
+  }
+
+  .checkbox-item.checked {
+    border-color: var(--cis-blue);
+    background: var(--cis-blue-pale);
+  }
+
+  .checkbox-item input[type="checkbox"] { display: none; }
+
+  .check-box {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-300);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .checkbox-item.checked .check-box {
+    background: var(--cis-blue);
+    border-color: var(--cis-blue);
+  }
+
+  .check-box::after {
+    content: '✓';
+    color: white;
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .checkbox-item.checked .check-box::after { opacity: 1; }
+
+  .checkbox-item span {
+    font-size: 13px;
+    color: var(--gray-700);
+    font-weight: 500;
+  }
+
+  /* Radio group (Si/No questions) */
+  .question-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 12px;
+    align-items: start;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+
+  .question-row:last-child { border-bottom: none; }
+
+  .question-text {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-700);
+    padding-top: 6px;
+  }
+
+  .radio-group {
+    display: flex;
+    gap: 6px;
+  }
+
+  .radio-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+    background: var(--gray-50);
+    user-select: none;
+  }
+
+  .radio-btn:hover { border-color: var(--cis-blue-light); }
+
+  .radio-btn input { display: none; }
+
+  .radio-btn.selected-si {
+    background: #dcfce7;
+    border-color: var(--green);
+    color: var(--green);
+  }
+
+  .radio-btn.selected-no {
+    background: #fee2e2;
+    border-color: var(--red);
+    color: var(--red);
+  }
+
+  .question-row .field { flex: 1; }
+  .question-row .field input { font-size: 13px; padding: 6px 10px; }
+
+  /* Rating */
+  .rating-grid {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .rating-option {
+    padding: 10px 20px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+    background: var(--gray-50);
+    user-select: none;
+    text-align: center;
+  }
+
+  .rating-option:hover { border-color: var(--cis-blue-light); }
+  .rating-option input { display: none; }
+
+  .rating-option.selected {
+    color: white;
+  }
+
+  .rating-option[data-val="malo"].selected { background: var(--red); border-color: var(--red); }
+  .rating-option[data-val="regular"].selected { background: var(--amber); border-color: var(--amber); }
+  .rating-option[data-val="bueno"].selected { background: var(--cis-blue-light); border-color: var(--cis-blue-light); }
+  .rating-option[data-val="excelente"].selected { background: var(--green); border-color: var(--green); }
+
+  /* Signature pad */
+  .signature-wrapper {
+    border: 2px dashed var(--gray-300);
+    border-radius: var(--radius);
+    padding: 8px;
+    background: var(--gray-50);
+    position: relative;
+  }
+
+  .signature-wrapper canvas {
+    width: 100%;
+    height: 120px;
+    display: block;
+    cursor: crosshair;
+    border-radius: 4px;
+    touch-action: none;
+  }
+
+  .sig-clear {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: var(--gray-200);
+    border: none;
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--gray-600);
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .sig-clear:hover { background: var(--gray-300); }
+
+  .sig-label {
+    text-align: center;
+    font-size: 11px;
+    color: var(--gray-400);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  /* Participants grid */
+  .participants-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .participant-card {
+    background: var(--gray-50);
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 18px;
+  }
+
+  .participant-card h4 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--cis-blue);
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .participant-card .field + .field { margin-top: 10px; }
+
+  /* Submit button */
+  .submit-section {
+    margin-top: 32px;
+    text-align: center;
+    padding-top: 24px;
+    border-top: 2px solid var(--gray-200);
+  }
+
+  .btn-submit {
+    background: linear-gradient(135deg, var(--cis-blue), var(--cis-blue-light));
+    color: white;
+    border: none;
+    padding: 16px 48px;
+    font-size: 16px;
+    font-weight: 700;
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: 'IBM Plex Sans', sans-serif;
+    letter-spacing: 0.5px;
+    transition: all 0.3s;
+    box-shadow: 0 6px 20px rgba(26,95,138,0.35);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(26,95,138,0.45);
+  }
+
+  .btn-submit:active {
+    transform: translateY(0);
+  }
+
+  .btn-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .btn-submit .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  .btn-submit.loading .spinner { display: block; }
+  .btn-submit.loading .btn-text { display: none; }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Status message */
+  .status-msg {
+    margin-top: 16px;
+    padding: 12px 20px;
+    border-radius: var(--radius);
+    font-size: 14px;
+    font-weight: 500;
+    display: none;
+    animation: fadeIn 0.3s;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .status-msg.success {
+    display: block;
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+  }
+
+  .status-msg.error {
+    display: block;
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+  }
+
+  /* Footer */
+  .form-footer {
+    text-align: center;
+    padding: 16px;
+    background: var(--gray-50);
+    font-size: 11px;
+    color: var(--gray-400);
+    border-top: 1px solid var(--gray-100);
+  }
+
+  /* Observations box in service data */
+  .service-data-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .service-data-layout .checkbox-group-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+  }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    body { padding: 10px; }
+    .form-body { padding: 20px 18px; }
+    .grid-2, .checkbox-grid, .participants-grid, .service-data-layout { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .question-row { grid-template-columns: 1fr; }
+    .form-header { padding: 20px; }
+    .header-text h1 { font-size: 14px; }
+    .header-text h2 { font-size: 18px; }
+  }
+
+  /* PDF render area (hidden) */
+  #pdf-render {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    width: 800px;
+    background: white;
+    font-family: 'IBM Plex Sans', sans-serif;
+    padding: 30px;
+  }
+</style>
+</head>
+<body>
+
+<div class="form-container" id="formContainer">
+  <!-- Header -->
+  <div class="form-header">
+    <div class="logo-circle">CIS</div>
+    <div class="header-text">
+      <h1>Compañía Interamericana de Seguridad y Servicios</h1>
+      <h2>Control de Servicio</h2>
+    </div>
+    <div class="version-badge">Ver. 5</div>
+  </div>
+
+  <div class="form-body">
+
+    <!-- 1. Datos Cliente y/o Proyecto -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">1</span>
+        Datos Cliente y/o Proyecto
+      </div>
+      <div class="grid-3">
+        <div class="field">
+          <label>Fecha del Servicio</label>
+          <input type="date" id="fechaServicio">
+        </div>
+        <div class="field">
+          <label>Ciudad</label>
+          <input type="text" id="ciudad" placeholder="Ej: Bogotá">
+        </div>
+        <div class="field">
+          <label>Cliente</label>
+          <input type="text" id="cliente" placeholder="Nombre del cliente">
+        </div>
+      </div>
+      <div style="margin-top:14px;">
+        <div class="field">
+          <label>Número de contrato u orden de compra</label>
+          <input type="text" id="contrato" placeholder="Ej: OC-2025-001">
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Datos del Servicio -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">2</span>
+        Datos del Servicio
+      </div>
+      <div class="service-data-layout">
+        <div>
+          <div class="checkbox-group-col">
+            <h4>Tipo de sistema (Marque con X)</h4>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="sistema" value="CCTV">
+                <span class="check-box"></span>
+                <span>CCTV</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="sistema" value="Alarma">
+                <span class="check-box"></span>
+                <span>Alarma</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="sistema" value="Control de acceso">
+                <span class="check-box"></span>
+                <span>Control de acceso</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="sistema" value="Máquina de RX">
+                <span class="check-box"></span>
+                <span>Máquina de RX</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="sistema" value="Arco detector de metales">
+                <span class="check-box"></span>
+                <span>Arco detector de metales</span>
+              </label>
+            </div>
+            <div class="field" style="margin-top:8px;">
+              <label>Otro (especifique)</label>
+              <input type="text" id="sistemaOtro" placeholder="Otro sistema...">
+            </div>
+          </div>
+          <div class="checkbox-group-col" style="margin-top:16px;">
+            <h4>Tipo de servicio</h4>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="servicio" value="Instalación">
+                <span class="check-box"></span>
+                <span>Instalación</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="servicio" value="Mantenimiento correctivo">
+                <span class="check-box"></span>
+                <span>Mantenimiento correctivo</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="servicio" value="Mantenimiento preventivo">
+                <span class="check-box"></span>
+                <span>Mantenimiento preventivo</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="servicio" value="Visita técnica">
+                <span class="check-box"></span>
+                <span>Visita técnica</span>
+              </label>
+              <label class="checkbox-item" onclick="toggleCheck(this)">
+                <input type="checkbox" name="servicio" value="Diseño">
+                <span class="check-box"></span>
+                <span>Diseño</span>
+              </label>
+            </div>
+            <div class="field" style="margin-top:8px;">
+              <label>Otro (especifique)</label>
+              <input type="text" id="servicioOtro" placeholder="Otro servicio...">
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Observaciones</label>
+          <textarea id="observacionesServicio" placeholder="Observaciones del servicio..." style="min-height:200px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Reporte de la avería -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">3</span>
+        Reporte de la Avería
+      </div>
+      <div class="field">
+        <label>Describa el daño reportado por el cliente (si no aplica escriba N/A)</label>
+        <textarea id="reporteAveria" placeholder="Descripción de la avería..."></textarea>
+      </div>
+    </div>
+
+    <!-- 4. Estado y/o diagnóstico -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">4</span>
+        Estado y/o Diagnóstico de los Equipos
+      </div>
+      <div class="field">
+        <label>Describa el estado en que encuentra los equipos (si no aplica escriba N/A)</label>
+        <textarea id="diagnostico" placeholder="Estado de los equipos..."></textarea>
+      </div>
+    </div>
+
+    <!-- 5. Actividad realizada -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">5</span>
+        Actividad Realizada
+      </div>
+      <div class="field">
+        <label>Describa detalladamente la actividad (incluya marca, modelo y serial cuando aplique)</label>
+        <textarea id="actividadRealizada" placeholder="Detalle de la actividad realizada..." style="min-height:100px;"></textarea>
+      </div>
+
+      <div style="margin-top:16px;">
+        <div class="question-row">
+          <span class="question-text">¿El equipo queda funcionando correctamente?</span>
+          <div class="radio-group">
+            <label class="radio-btn" onclick="selectRadio(this,'equipo_funciona','si')">
+              <input type="radio" name="equipo_funciona" value="si"> Sí
+            </label>
+            <label class="radio-btn" onclick="selectRadio(this,'equipo_funciona','no')">
+              <input type="radio" name="equipo_funciona" value="no"> No
+            </label>
+          </div>
+          <div class="field">
+            <label>Aclaraciones</label>
+            <input type="text" id="aclaracion1" placeholder="...">
+          </div>
+        </div>
+
+        <div class="question-row">
+          <span class="question-text">¿Es necesario retirar el equipo?</span>
+          <div class="radio-group">
+            <label class="radio-btn" onclick="selectRadio(this,'retirar_equipo','si')">
+              <input type="radio" name="retirar_equipo" value="si"> Sí
+            </label>
+            <label class="radio-btn" onclick="selectRadio(this,'retirar_equipo','no')">
+              <input type="radio" name="retirar_equipo" value="no"> No
+            </label>
+          </div>
+          <div class="field">
+            <label>Aclaraciones</label>
+            <input type="text" id="aclaracion2" placeholder="...">
+          </div>
+        </div>
+
+        <div class="question-row">
+          <span class="question-text">¿Se requiere visita posterior?</span>
+          <div class="radio-group">
+            <label class="radio-btn" onclick="selectRadio(this,'visita_posterior','si')">
+              <input type="radio" name="visita_posterior" value="si"> Sí
+            </label>
+            <label class="radio-btn" onclick="selectRadio(this,'visita_posterior','no')">
+              <input type="radio" name="visita_posterior" value="no"> No
+            </label>
+          </div>
+          <div class="field">
+            <label>Aclaraciones</label>
+            <input type="text" id="aclaracion3" placeholder="...">
+          </div>
+        </div>
+      </div>
+
+      <div class="field" style="margin-top:14px;">
+        <label>Observaciones finales</label>
+        <textarea id="observacionesFinales" placeholder="Observaciones finales..."></textarea>
+      </div>
+    </div>
+
+    <!-- 6. Calificación del servicio -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">6</span>
+        Calificación del Servicio
+      </div>
+      <p style="font-size:12px;color:var(--gray-400);margin-bottom:12px;font-style:italic;">Espacio para diligenciar por parte del cliente</p>
+      <div class="grid-2">
+        <div>
+          <label style="font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">El servicio le pareció:</label>
+          <div class="rating-grid">
+            <label class="rating-option" data-val="malo" onclick="selectRating(this)">
+              <input type="radio" name="calificacion" value="Malo"> Malo
+            </label>
+            <label class="rating-option" data-val="regular" onclick="selectRating(this)">
+              <input type="radio" name="calificacion" value="Regular"> Regular
+            </label>
+            <label class="rating-option" data-val="bueno" onclick="selectRating(this)">
+              <input type="radio" name="calificacion" value="Bueno"> Bueno
+            </label>
+            <label class="rating-option" data-val="excelente" onclick="selectRating(this)">
+              <input type="radio" name="calificacion" value="Excelente"> Excelente
+            </label>
+          </div>
+        </div>
+        <div class="field">
+          <label>Observaciones, comentarios o PQRS</label>
+          <textarea id="pqrs" placeholder="Comentarios del cliente..." style="min-height:80px;"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <!-- 7. Datos de participantes -->
+    <div class="section">
+      <div class="section-title">
+        <span class="icon">7</span>
+        Datos de los Participantes
+      </div>
+      <div class="participants-grid">
+        <div class="participant-card">
+          <h4>Por parte de CIS</h4>
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" id="cisNombre" placeholder="Nombre completo">
+          </div>
+          <div class="field">
+            <label>Cargo</label>
+            <input type="text" id="cisCargo" placeholder="Cargo">
+          </div>
+          <div class="field">
+            <label>Firma</label>
+            <div class="signature-wrapper">
+              <canvas id="sigCIS"></canvas>
+              <button class="sig-clear" onclick="clearSignature('sigCIS')">Limpiar</button>
+            </div>
+            <p class="sig-label">Dibuje su firma arriba</p>
+          </div>
+        </div>
+
+        <div class="participant-card">
+          <h4>Por parte del Cliente</h4>
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" id="clienteNombre" placeholder="Nombre completo">
+          </div>
+          <div class="field">
+            <label>Cargo</label>
+            <input type="text" id="clienteCargo" placeholder="Cargo">
+          </div>
+          <div class="field">
+            <label>Firma</label>
+            <div class="signature-wrapper">
+              <canvas id="sigCliente"></canvas>
+              <button class="sig-clear" onclick="clearSignature('sigCliente')">Limpiar</button>
+            </div>
+            <p class="sig-label">Dibuje su firma arriba</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <div class="submit-section">
+      <button class="btn-submit" id="btnSubmit" onclick="submitForm()">
+        <span class="btn-text">📄 Guardar y Enviar PDF</span>
+        <span class="spinner"></span>
+        <span class="loading-text" style="display:none;">Enviando...</span>
+      </button>
+      <div class="status-msg" id="statusMsg"></div>
+    </div>
+
+  </div>
+
+  <div class="form-footer">
+    Fecha de emisión: 07/06/2025 — Compañía Interamericana de Seguridad y Servicios — Control de Servicio Ver. 5
+  </div>
+</div>
+
+<!-- Hidden PDF render area -->
+<div id="pdf-render"></div>
+
+<script>
+// ===== SIGNATURE PAD =====
+class SignaturePad {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.ctx = canvas.getContext('2d');
+    this.drawing = false;
+    this.paths = [];
+    this.currentPath = [];
+    this.resize();
+
+    // Mouse
+    canvas.addEventListener('mousedown', e => this.start(e));
+    canvas.addEventListener('mousemove', e => this.draw(e));
+    canvas.addEventListener('mouseup', () => this.stop());
+    canvas.addEventListener('mouseleave', () => this.stop());
+
+    // Touch
+    canvas.addEventListener('touchstart', e => { e.preventDefault(); this.start(e.touches[0]); });
+    canvas.addEventListener('touchmove', e => { e.preventDefault(); this.draw(e.touches[0]); });
+    canvas.addEventListener('touchend', e => { e.preventDefault(); this.stop(); });
+
+    window.addEventListener('resize', () => this.resize());
+  }
+
+  resize() {
+    const rect = this.canvas.parentElement.getBoundingClientRect();
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width = (rect.width - 16) * dpr;
+    this.canvas.height = 120 * dpr;
+    this.canvas.style.width = (rect.width - 16) + 'px';
+    this.canvas.style.height = '120px';
+    this.ctx.scale(dpr, dpr);
+    this.redraw();
+  }
+
+  getPos(e) {
+    const r = this.canvas.getBoundingClientRect();
+    return { x: e.clientX - r.left, y: e.clientY - r.top };
+  }
+
+  start(e) {
+    this.drawing = true;
+    this.currentPath = [this.getPos(e)];
+  }
+
+  draw(e) {
+    if (!this.drawing) return;
+    const pos = this.getPos(e);
+    this.currentPath.push(pos);
+    this.redraw();
+    // Draw current
+    this.ctx.beginPath();
+    this.ctx.strokeStyle = '#1e293b';
+    this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    for (let i = 0; i < this.currentPath.length; i++) {
+      if (i === 0) this.ctx.moveTo(this.currentPath[i].x, this.currentPath[i].y);
+      else this.ctx.lineTo(this.currentPath[i].x, this.currentPath[i].y);
+    }
+    this.ctx.stroke();
+  }
+
+  stop() {
+    if (this.drawing && this.currentPath.length > 0) {
+      this.paths.push([...this.currentPath]);
+    }
+    this.drawing = false;
+    this.currentPath = [];
+    this.redraw();
+  }
+
+  redraw() {
+    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.ctx.strokeStyle = '#1e293b';
+    this.ctx.lineWidth = 2;
+    this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = 'round';
+    for (const path of this.paths) {
+      this.ctx.beginPath();
+      for (let i = 0; i < path.length; i++) {
+        if (i === 0) this.ctx.moveTo(path[i].x, path[i].y);
+        else this.ctx.lineTo(path[i].x, path[i].y);
+      }
+      this.ctx.stroke();
+    }
+  }
+
+  clear() { this.paths = []; this.currentPath = []; this.redraw(); }
+  isEmpty() { return this.paths.length === 0; }
+  toDataURL() { return this.canvas.toDataURL('image/png'); }
+}
+
+let sigPads = {};
+
+window.addEventListener('DOMContentLoaded', () => {
+  sigPads.cis = new SignaturePad(document.getElementById('sigCIS'));
+  sigPads.cliente = new SignaturePad(document.getElementById('sigCliente'));
+
+  // Set today's date
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('fechaServicio').value = today;
+});
+
+function clearSignature(canvasId) {
+  if (canvasId === 'sigCIS') sigPads.cis.clear();
+  else sigPads.cliente.clear();
+}
+
+// ===== CHECKBOX TOGGLE =====
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  const cb = el.querySelector('input[type="checkbox"]');
+  cb.checked = !cb.checked;
+}
+
+// ===== RADIO BUTTONS =====
+function selectRadio(el, name, val) {
+  const parent = el.closest('.question-row') || el.parentElement;
+  parent.querySelectorAll('.radio-btn').forEach(btn => {
+    btn.classList.remove('selected-si', 'selected-no');
+  });
+  el.querySelector('input').checked = true;
+  el.classList.add(val === 'si' ? 'selected-si' : 'selected-no');
+}
+
+// ===== RATING =====
+function selectRating(el) {
+  document.querySelectorAll('.rating-option').forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+}
+
+// ===== GATHER FORM DATA =====
+function gatherData() {
+  const getChecked = (name) => {
+    const items = [];
+    document.querySelectorAll(`input[name="${name}"]:checked`).forEach(cb => items.push(cb.value));
+    return items;
+  };
+
+  const getRadio = (name) => {
+    const r = document.querySelector(`input[name="${name}"]:checked`);
+    return r ? r.value : '';
+  };
+
+  return {
+    fechaServicio: document.getElementById('fechaServicio').value,
+    ciudad: document.getElementById('ciudad').value,
+    cliente: document.getElementById('cliente').value,
+    contrato: document.getElementById('contrato').value,
+    sistemas: getChecked('sistema'),
+    sistemaOtro: document.getElementById('sistemaOtro').value,
+    servicios: getChecked('servicio'),
+    servicioOtro: document.getElementById('servicioOtro').value,
+    observacionesServicio: document.getElementById('observacionesServicio').value,
+    reporteAveria: document.getElementById('reporteAveria').value,
+    diagnostico: document.getElementById('diagnostico').value,
+    actividadRealizada: document.getElementById('actividadRealizada').value,
+    equipoFunciona: getRadio('equipo_funciona'),
+    aclaracion1: document.getElementById('aclaracion1').value,
+    retirarEquipo: getRadio('retirar_equipo'),
+    aclaracion2: document.getElementById('aclaracion2').value,
+    visitaPosterior: getRadio('visita_posterior'),
+    aclaracion3: document.getElementById('aclaracion3').value,
+    observacionesFinales: document.getElementById('observacionesFinales').value,
+    calificacion: getRadio('calificacion'),
+    pqrs: document.getElementById('pqrs').value,
+    cisNombre: document.getElementById('cisNombre').value,
+    cisCargo: document.getElementById('cisCargo').value,
+    firmaCIS: sigPads.cis.isEmpty() ? '' : sigPads.cis.toDataURL(),
+    clienteNombre: document.getElementById('clienteNombre').value,
+    clienteCargo: document.getElementById('clienteCargo').value,
+    firmaCliente: sigPads.cliente.isEmpty() ? '' : sigPads.cliente.toDataURL(),
+  };
+}
+
+// ===== BUILD PDF HTML =====
+function buildPdfHtml(data) {
+  const checkMark = (arr, val) => arr.includes(val) ? '☑' : '☐';
+  const radioMark = (field, val) => field === val ? '☑' : '☐';
+
+  return `
+  <div style="font-family:Arial,sans-serif;font-size:12px;color:#1e293b;line-height:1.5;padding:20px;">
+    <div style="background:#1a5f8a;color:white;padding:18px 24px;border-radius:8px;margin-bottom:20px;display:flex;align-items:center;gap:16px;">
+      <div style="width:50px;height:50px;background:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;font-size:16px;color:#1a5f8a;">CIS</div>
+      <div>
+        <div style="font-size:14px;font-weight:bold;letter-spacing:1px;">COMPAÑÍA INTERAMERICANA DE SEGURIDAD Y SERVICIOS</div>
+        <div style="font-size:18px;margin-top:2px;">Control de Servicio</div>
+      </div>
+      <div style="margin-left:auto;font-size:11px;opacity:0.8;">Ver. 5</div>
+    </div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:14px;">
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;width:25%;">Fecha del Servicio</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.fechaServicio}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;width:15%;">Ciudad</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.ciudad}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;">Cliente</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.cliente}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;">N° Contrato</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.contrato}</td>
+      </tr>
+    </table>
+
+    <div style="font-weight:bold;font-size:13px;color:#1a5f8a;border-bottom:2px solid #1a5f8a;padding-bottom:4px;margin:16px 0 10px;">Datos del Servicio</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;width:50%;vertical-align:top;">
+          <strong>Tipo de sistema:</strong><br>
+          ${checkMark(data.sistemas,'CCTV')} CCTV &nbsp; ${checkMark(data.sistemas,'Alarma')} Alarma &nbsp; ${checkMark(data.sistemas,'Control de acceso')} Control de acceso<br>
+          ${checkMark(data.sistemas,'Máquina de RX')} Máquina de RX &nbsp; ${checkMark(data.sistemas,'Arco detector de metales')} Arco detector de metales<br>
+          ${data.sistemaOtro ? 'Otro: ' + data.sistemaOtro : ''}
+        </td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;width:50%;vertical-align:top;">
+          <strong>Tipo de servicio:</strong><br>
+          ${checkMark(data.servicios,'Instalación')} Instalación &nbsp; ${checkMark(data.servicios,'Mantenimiento correctivo')} Mant. correctivo<br>
+          ${checkMark(data.servicios,'Mantenimiento preventivo')} Mant. preventivo &nbsp; ${checkMark(data.servicios,'Visita técnica')} Visita técnica<br>
+          ${checkMark(data.servicios,'Diseño')} Diseño
+          ${data.servicioOtro ? '<br>Otro: ' + data.servicioOtro : ''}
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="border:1px solid #cbd5e1;padding:4px 8px;">
+          <strong>Observaciones:</strong> ${data.observacionesServicio || 'N/A'}
+        </td>
+      </tr>
+    </table>
+
+    <div style="font-weight:bold;font-size:13px;color:#1a5f8a;border-bottom:2px solid #1a5f8a;padding-bottom:4px;margin:16px 0 10px;">Reporte de la Avería</div>
+    <div style="border:1px solid #cbd5e1;padding:8px 10px;min-height:40px;margin-bottom:10px;">${data.reporteAveria || 'N/A'}</div>
+
+    <div style="font-weight:bold;font-size:13px;color:#1a5f8a;border-bottom:2px solid #1a5f8a;padding-bottom:4px;margin:16px 0 10px;">Estado y/o Diagnóstico de los Equipos</div>
+    <div style="border:1px solid #cbd5e1;padding:8px 10px;min-height:40px;margin-bottom:10px;">${data.diagnostico || 'N/A'}</div>
+
+    <div style="font-weight:bold;font-size:13px;color:#1a5f8a;border-bottom:2px solid #1a5f8a;padding-bottom:4px;margin:16px 0 10px;">Actividad Realizada</div>
+    <div style="border:1px solid #cbd5e1;padding:8px 10px;min-height:40px;margin-bottom:10px;">${data.actividadRealizada || 'N/A'}</div>
+
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;">¿El equipo queda funcionando correctamente?</td>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;width:80px;text-align:center;">${radioMark(data.equipoFunciona,'si')} Sí &nbsp; ${radioMark(data.equipoFunciona,'no')} No</td>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;">${data.aclaracion1 || ''}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;">¿Es necesario retirar el equipo?</td>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;text-align:center;">${radioMark(data.retirarEquipo,'si')} Sí &nbsp; ${radioMark(data.retirarEquipo,'no')} No</td>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;">${data.aclaracion2 || ''}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;">¿Se requiere visita posterior?</td>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;text-align:center;">${radioMark(data.visitaPosterior,'si')} Sí &nbsp; ${radioMark(data.visitaPosterior,'no')} No</td>
+        <td style="border:1px solid #cbd5e1;padding:5px 8px;">${data.aclaracion3 || ''}</td>
+      </tr>
+    </table>
+    <div style="border:1px solid #cbd5e1;padding:8px 10px;margin-bottom:10px;"><strong>Observaciones finales:</strong> ${data.observacionesFinales || 'N/A'}</div>
+
+    <div style="font-weight:bold;font-size:13px;color:#1a5f8a;border-bottom:2px solid #1a5f8a;padding-bottom:4px;margin:16px 0 10px;">Calificación del Servicio</div>
+    <table style="width:100%;border-collapse:collapse;margin-bottom:10px;">
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;width:40%;">
+          ${radioMark(data.calificacion,'Malo')} Malo &nbsp; ${radioMark(data.calificacion,'Regular')} Regular &nbsp; ${radioMark(data.calificacion,'Bueno')} Bueno &nbsp; ${radioMark(data.calificacion,'Excelente')} Excelente
+        </td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.pqrs || 'Sin comentarios'}</td>
+      </tr>
+    </table>
+
+    <div style="font-weight:bold;font-size:13px;color:#1a5f8a;border-bottom:2px solid #1a5f8a;padding-bottom:4px;margin:16px 0 10px;">Datos de los Participantes</div>
+    <table style="width:100%;border-collapse:collapse;">
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;background:#f1f5f9;font-weight:bold;text-align:center;" colspan="2">Por parte de CIS</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;background:#f1f5f9;font-weight:bold;text-align:center;" colspan="2">Por parte del Cliente</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;font-weight:bold;">Nombre:</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;">${data.cisNombre}</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;font-weight:bold;">Nombre:</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;">${data.clienteNombre}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;font-weight:bold;">Cargo:</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;">${data.cisCargo}</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;font-weight:bold;">Cargo:</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;">${data.clienteCargo}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;font-weight:bold;">Firma:</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;text-align:center;">
+          ${data.firmaCIS ? '<img src="' + data.firmaCIS + '" style="max-width:180px;max-height:70px;">' : '<span style="color:#94a3b8;">Sin firma</span>'}
+        </td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;font-weight:bold;">Firma:</td>
+        <td style="border:1px solid #cbd5e1;padding:4px 8px;text-align:center;">
+          ${data.firmaCliente ? '<img src="' + data.firmaCliente + '" style="max-width:180px;max-height:70px;">' : '<span style="color:#94a3b8;">Sin firma</span>'}
+        </td>
+      </tr>
+    </table>
+
+    <div style="text-align:center;margin-top:20px;font-size:10px;color:#94a3b8;">
+      Fecha de emisión: 07/06/2025 — Compañía Interamericana de Seguridad y Servicios — Control de Servicio Ver. 5
+    </div>
+  </div>`;
+}
+
+// ===== GENERATE PDF AND SEND =====
+async function submitForm() {
+  const btn = document.getElementById('btnSubmit');
+  const status = document.getElementById('statusMsg');
+  status.className = 'status-msg';
+  status.style.display = 'none';
+
+  btn.classList.add('loading');
+  btn.querySelector('.loading-text').style.display = 'inline';
+  btn.disabled = true;
+
+  try {
+    const data = gatherData();
+
+    // Render PDF HTML
+    const renderDiv = document.getElementById('pdf-render');
+    renderDiv.innerHTML = buildPdfHtml(data);
+
+    // Wait for images to load
+    await new Promise(r => setTimeout(r, 300));
+
+    // Generate canvas from HTML
+    const canvas = await html2canvas(renderDiv, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+
+    // Create PDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const imgData = canvas.toDataURL('image/png');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const margin = 8;
+    const usableWidth = pageWidth - (margin * 2);
+    const imgHeight = (canvas.height * usableWidth) / canvas.width;
+
+    let heightLeft = imgHeight;
+    let position = margin;
+
+    pdf.addImage(imgData, 'PNG', margin, position, usableWidth, imgHeight);
+    heightLeft -= (pageHeight - margin * 2);
+
+    while (heightLeft > 0) {
+      position = -(pageHeight - margin * 2) + margin + (imgHeight - heightLeft - (pageHeight - margin * 2));
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', margin, position - heightLeft + margin, usableWidth, imgHeight);
+      heightLeft -= (pageHeight - margin * 2);
+    }
+
+    // Convert PDF to base64
+    const pdfBase64 = pdf.output('datauristring').split(',')[1];
+    const fileName = `Control_Servicio_${data.cliente || 'SinCliente'}_${data.fechaServicio || 'SinFecha'}.pdf`;
+
+    // Send to n8n webhook
+    const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook-test/d987379c-6963-4458-afdf-5176ae66b4d5';
+
+    const payload = {
+      fileName: fileName,
+      pdfBase64: pdfBase64,
+      formData: data,
+      timestamp: new Date().toISOString()
+    };
+
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      status.className = 'status-msg success';
+      status.innerHTML = '✅ <strong>¡Formulario enviado exitosamente!</strong> El PDF ha sido generado y enviado al servidor.';
+      status.style.display = 'block';
+
+      // Also offer local download
+      pdf.save(fileName);
+    } else {
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
+
+  } catch (err) {
+    console.error(err);
+    status.className = 'status-msg error';
+    status.innerHTML = `❌ <strong>Error al enviar:</strong> ${err.message}. Intente nuevamente.`;
+    status.style.display = 'block';
+  } finally {
+    btn.classList.remove('loading');
+    btn.querySelector('.loading-text').style.display = 'none';
+    btn.disabled = false;
+  }
+}
+</script>
+</body>
+</html>
