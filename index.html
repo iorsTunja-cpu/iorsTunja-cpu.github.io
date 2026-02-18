@@ -1242,62 +1242,30 @@ async function submitForm() {
     const pdfBase64 = pdf.output('datauristring').split(',')[1];
     const fileName = `Control_Servicio_${data.cliente || 'SinCliente'}_${data.fechaServicio || 'SinFecha'}.pdf`;
 
-    // Send via hidden iframe + form to avoid CORS completely
+    // Send to n8n webhook
     const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
 
-    // Create hidden iframe
-    let iframe = document.getElementById('submitIframe');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.id = 'submitIframe';
-      iframe.name = 'submitIframe';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-    }
-
-    // Create hidden form
-    let hiddenForm = document.getElementById('hiddenSubmitForm');
-    if (hiddenForm) hiddenForm.remove();
-
-    hiddenForm = document.createElement('form');
-    hiddenForm.id = 'hiddenSubmitForm';
-    hiddenForm.method = 'POST';
-    hiddenForm.action = webhookUrl;
-    hiddenForm.target = 'submitIframe'; // Submit into hidden iframe
-    hiddenForm.enctype = 'application/x-www-form-urlencoded';
-    hiddenForm.style.display = 'none';
-
-    // Add fields
-    const fields = {
+    const payload = {
       fileName: fileName,
       pdfBase64: pdfBase64,
-      formData: JSON.stringify(data),
+      formData: data,
       timestamp: new Date().toISOString()
     };
 
-    for (const [key, val] of Object.entries(fields)) {
-      const input = document.createElement('input');
-      input.type = 'hidden';
-      input.name = key;
-      input.value = val;
-      hiddenForm.appendChild(input);
-    }
-
-    document.body.appendChild(hiddenForm);
-
-    // Submit and wait
-    await new Promise((resolve) => {
-      iframe.onload = () => resolve();
-      setTimeout(() => resolve(), 5000); // Timeout fallback
-      hiddenForm.submit();
+    const response = await fetch(webhookUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
 
-    status.className = 'status-msg success';
-    status.innerHTML = '✅ <strong>¡Formulario enviado exitosamente!</strong> El PDF ha sido generado y enviado al servidor.';
-    status.style.display = 'block';
-
-    // Also offer local download
-    pdf.save(fileName);
+    if (response.ok || response.status === 200) {
+      status.className = 'status-msg success';
+      status.innerHTML = '✅ <strong>¡Formulario enviado exitosamente!</strong> El PDF ha sido generado y enviado al servidor.';
+      status.style.display = 'block';
+      pdf.save(fileName);
+    } else {
+      throw new Error(`Error del servidor: ${response.status}`);
+    }
 
   } catch (err) {
     console.error(err);
