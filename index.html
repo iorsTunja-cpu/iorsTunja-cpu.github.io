@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1242,7 +1241,10 @@ async function submitForm() {
     const pdfBase64 = pdf.output('datauristring').split(',')[1];
     const fileName = `Control_Servicio_${data.cliente || 'SinCliente'}_${data.fechaServicio || 'SinFecha'}.pdf`;
 
-    // Send to n8n webhook
+    // Always download PDF first
+    pdf.save(fileName);
+
+    // Then try to send to n8n webhook
     const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
 
     const payload = {
@@ -1252,19 +1254,26 @@ async function submitForm() {
       timestamp: new Date().toISOString()
     };
 
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
 
-    if (response.ok || response.status === 200) {
+      if (response.ok || response.status === 200) {
+        status.className = 'status-msg success';
+        status.innerHTML = '✅ <strong>¡Formulario enviado exitosamente!</strong> El PDF ha sido generado, descargado y enviado al servidor.';
+        status.style.display = 'block';
+      } else {
+        status.className = 'status-msg success';
+        status.innerHTML = '⚠️ <strong>PDF descargado correctamente.</strong> Hubo un problema al enviar al servidor (error ' + response.status + '), pero tu PDF se descargó. Contacta al administrador.';
+        status.style.display = 'block';
+      }
+    } catch (sendErr) {
       status.className = 'status-msg success';
-      status.innerHTML = '✅ <strong>¡Formulario enviado exitosamente!</strong> El PDF ha sido generado y enviado al servidor.';
+      status.innerHTML = '⚠️ <strong>PDF descargado correctamente.</strong> No se pudo conectar al servidor, pero tu PDF se descargó. Contacta al administrador.';
       status.style.display = 'block';
-      pdf.save(fileName);
-    } else {
-      throw new Error(`Error del servidor: ${response.status}`);
     }
 
   } catch (err) {
