@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -595,6 +596,18 @@
         </div>
       </div>
       <div style="margin-top:14px;">
+        <div class="grid-2">
+          <div class="field">
+            <label>Dirección</label>
+            <input type="text" id="direccion" placeholder="Ej: Calle 10 #5-30">
+          </div>
+          <div class="field">
+            <label>Sede</label>
+            <input type="text" id="sede" placeholder="Ej: Sede Principal">
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:14px;">
         <div class="field">
           <label>Número de contrato u orden de compra</label>
           <input type="text" id="contrato" placeholder="Ej: OC-2025-001">
@@ -1030,6 +1043,8 @@ function gatherData() {
     ciudad: document.getElementById('ciudad').value,
     cliente: document.getElementById('cliente').value,
     contrato: document.getElementById('contrato').value,
+    direccion: document.getElementById('direccion').value,
+    sede: document.getElementById('sede').value,
     sistemas: getChecked('sistema'),
     sistemaOtro: document.getElementById('sistemaOtro').value,
     servicios: getChecked('servicio'),
@@ -1084,6 +1099,12 @@ function buildPdfHtml(data) {
         <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.cliente}</td>
         <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;">N° Contrato</td>
         <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.contrato}</td>
+      </tr>
+      <tr>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;">Dirección</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.direccion}</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;background:#f1f5f9;font-weight:bold;">Sede</td>
+        <td style="border:1px solid #cbd5e1;padding:6px 10px;">${data.sede}</td>
       </tr>
     </table>
 
@@ -1245,7 +1266,7 @@ async function submitForm() {
     pdf.save(fileName);
 
     // Then try to send to n8n webhook
-    const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook-test/recibir-servicio';
+    const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
 
     const payload = {
       fileName: fileName,
