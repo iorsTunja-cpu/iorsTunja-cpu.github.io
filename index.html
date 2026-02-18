@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1242,7 +1243,7 @@ async function submitForm() {
     const fileName = `Control_Servicio_${data.cliente || 'SinCliente'}_${data.fechaServicio || 'SinFecha'}.pdf`;
 
     // Send to n8n webhook
-    const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook-test/d987379c-6963-4458-afdf-5176ae66b4d5';
+    const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
 
     const payload = {
       fileName: fileName,
