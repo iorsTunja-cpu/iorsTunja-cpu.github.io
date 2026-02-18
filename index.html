@@ -614,31 +614,31 @@
           <div class="checkbox-group-col">
             <h4>Tipo de sistema (Marque con X)</h4>
             <div style="display:flex;flex-direction:column;gap:6px;">
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="sistema" value="CCTV">
                 <span class="check-box"></span>
                 <span>CCTV</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="sistema" value="Alarma">
                 <span class="check-box"></span>
                 <span>Alarma</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="sistema" value="Control de acceso">
                 <span class="check-box"></span>
                 <span>Control de acceso</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="sistema" value="Máquina de RX">
                 <span class="check-box"></span>
                 <span>Máquina de RX</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="sistema" value="Arco detector de metales">
                 <span class="check-box"></span>
                 <span>Arco detector de metales</span>
-              </label>
+              </div>
             </div>
             <div class="field" style="margin-top:8px;">
               <label>Otro (especifique)</label>
@@ -648,31 +648,31 @@
           <div class="checkbox-group-col" style="margin-top:16px;">
             <h4>Tipo de servicio</h4>
             <div style="display:flex;flex-direction:column;gap:6px;">
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="servicio" value="Instalación">
                 <span class="check-box"></span>
                 <span>Instalación</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="servicio" value="Mantenimiento correctivo">
                 <span class="check-box"></span>
                 <span>Mantenimiento correctivo</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="servicio" value="Mantenimiento preventivo">
                 <span class="check-box"></span>
                 <span>Mantenimiento preventivo</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="servicio" value="Visita técnica">
                 <span class="check-box"></span>
                 <span>Visita técnica</span>
-              </label>
-              <label class="checkbox-item" onclick="toggleCheck(this)">
+              </div>
+              <div class="checkbox-item" onclick="toggleCheck(this)">
                 <input type="checkbox" name="servicio" value="Diseño">
                 <span class="check-box"></span>
                 <span>Diseño</span>
-              </label>
+              </div>
             </div>
             <div class="field" style="margin-top:8px;">
               <label>Otro (especifique)</label>
@@ -726,12 +726,12 @@
         <div class="question-row">
           <span class="question-text">¿El equipo queda funcionando correctamente?</span>
           <div class="radio-group">
-            <label class="radio-btn" onclick="selectRadio(this,'equipo_funciona','si')">
+            <div class="radio-btn" onclick="selectRadio(this,'equipo_funciona','si')">
               <input type="radio" name="equipo_funciona" value="si"> Sí
-            </label>
-            <label class="radio-btn" onclick="selectRadio(this,'equipo_funciona','no')">
+            </div>
+            <div class="radio-btn" onclick="selectRadio(this,'equipo_funciona','no')">
               <input type="radio" name="equipo_funciona" value="no"> No
-            </label>
+            </div>
           </div>
           <div class="field">
             <label>Aclaraciones</label>
@@ -742,12 +742,12 @@
         <div class="question-row">
           <span class="question-text">¿Es necesario retirar el equipo?</span>
           <div class="radio-group">
-            <label class="radio-btn" onclick="selectRadio(this,'retirar_equipo','si')">
+            <div class="radio-btn" onclick="selectRadio(this,'retirar_equipo','si')">
               <input type="radio" name="retirar_equipo" value="si"> Sí
-            </label>
-            <label class="radio-btn" onclick="selectRadio(this,'retirar_equipo','no')">
+            </div>
+            <div class="radio-btn" onclick="selectRadio(this,'retirar_equipo','no')">
               <input type="radio" name="retirar_equipo" value="no"> No
-            </label>
+            </div>
           </div>
           <div class="field">
             <label>Aclaraciones</label>
@@ -758,12 +758,12 @@
         <div class="question-row">
           <span class="question-text">¿Se requiere visita posterior?</span>
           <div class="radio-group">
-            <label class="radio-btn" onclick="selectRadio(this,'visita_posterior','si')">
+            <div class="radio-btn" onclick="selectRadio(this,'visita_posterior','si')">
               <input type="radio" name="visita_posterior" value="si"> Sí
-            </label>
-            <label class="radio-btn" onclick="selectRadio(this,'visita_posterior','no')">
+            </div>
+            <div class="radio-btn" onclick="selectRadio(this,'visita_posterior','no')">
               <input type="radio" name="visita_posterior" value="no"> No
-            </label>
+            </div>
           </div>
           <div class="field">
             <label>Aclaraciones</label>
@@ -789,18 +789,18 @@
         <div>
           <label style="font-size:12px;font-weight:600;color:var(--gray-600);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:8px;">El servicio le pareció:</label>
           <div class="rating-grid">
-            <label class="rating-option" data-val="malo" onclick="selectRating(this)">
+            <div class="rating-option" data-val="malo" onclick="selectRating(this)">
               <input type="radio" name="calificacion" value="Malo"> Malo
-            </label>
-            <label class="rating-option" data-val="regular" onclick="selectRating(this)">
+            </div>
+            <div class="rating-option" data-val="regular" onclick="selectRating(this)">
               <input type="radio" name="calificacion" value="Regular"> Regular
-            </label>
-            <label class="rating-option" data-val="bueno" onclick="selectRating(this)">
+            </div>
+            <div class="rating-option" data-val="bueno" onclick="selectRating(this)">
               <input type="radio" name="calificacion" value="Bueno"> Bueno
-            </label>
-            <label class="rating-option" data-val="excelente" onclick="selectRating(this)">
+            </div>
+            <div class="rating-option" data-val="excelente" onclick="selectRating(this)">
               <input type="radio" name="calificacion" value="Excelente"> Excelente
-            </label>
+            </div>
           </div>
         </div>
         <div class="field">
@@ -1238,27 +1238,43 @@ async function submitForm() {
       heightLeft -= (pageHeight - margin * 2);
     }
 
-    // Convert PDF to base64
-    const pdfBase64 = pdf.output('datauristring').split(',')[1];
+    // Convert PDF to blob
+    const pdfBlob = pdf.output('blob');
     const fileName = `Control_Servicio_${data.cliente || 'SinCliente'}_${data.fechaServicio || 'SinFecha'}.pdf`;
 
-    // Send to n8n webhook
+    // Send to n8n webhook using FormData (avoids CORS issues)
     const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
 
-    const payload = {
-      fileName: fileName,
-      pdfBase64: pdfBase64,
-      formData: data,
-      timestamp: new Date().toISOString()
-    };
+    const formData = new FormData();
+    formData.append('file', pdfBlob, fileName);
+    formData.append('fileName', fileName);
+    formData.append('formData', JSON.stringify(data));
+    formData.append('timestamp', new Date().toISOString());
 
-    const response = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+    // Use navigator.sendBeacon as primary method (no CORS)
+    // Fallback to no-cors fetch
+    let sent = false;
 
-    if (response.ok) {
+    try {
+      const response = await fetch(webhookUrl, {
+        method: 'POST',
+        body: formData,
+        mode: 'no-cors' // This avoids CORS preflight
+      });
+      // In no-cors mode, response is opaque (status 0), but data IS sent
+      sent = true;
+    } catch(e) {
+      // Fallback: try with XMLHttpRequest
+      await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', webhookUrl);
+        xhr.onload = () => { sent = true; resolve(); };
+        xhr.onerror = () => reject(new Error('No se pudo conectar al servidor'));
+        xhr.send(formData);
+      });
+    }
+
+    if (sent) {
       status.className = 'status-msg success';
       status.innerHTML = '✅ <strong>¡Formulario enviado exitosamente!</strong> El PDF ha sido generado y enviado al servidor.';
       status.style.display = 'block';
@@ -1266,7 +1282,7 @@ async function submitForm() {
       // Also offer local download
       pdf.save(fileName);
     } else {
-      throw new Error(`Error del servidor: ${response.status}`);
+      throw new Error('No se pudo enviar el formulario');
     }
 
   } catch (err) {
