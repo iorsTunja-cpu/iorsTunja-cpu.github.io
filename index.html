@@ -1443,28 +1443,27 @@ async function submitForm() {
       }
     }
 
-    // Convert PDF to base64
-    const pdfBase64 = pdf.output('datauristring').split(',')[1];
+    // Get PDF as blob (binary)
+    const pdfBlob = pdf.output('blob');
     const fileName = `Control_Servicio_${data.cliente || 'SinCliente'}_${data.fechaServicio || 'SinFecha'}.pdf`;
 
     // Always download PDF first
     pdf.save(fileName);
 
-    // Then try to send to n8n webhook
+    // Send PDF as binary file via FormData (no base64, no CORS preflight issues)
     const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
 
-    const payload = {
-      fileName: fileName,
-      pdfBase64: pdfBase64,
-      formData: data,
-      timestamp: new Date().toISOString()
-    };
+    const formData = new FormData();
+    formData.append('file', pdfBlob, fileName);
+    formData.append('fileName', fileName);
+    formData.append('formData', JSON.stringify(data));
+    formData.append('timestamp', new Date().toISOString());
 
     try {
       const response = await fetch(webhookUrl, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: formData
+        // NO Content-Type header - browser sets it automatically with boundary
       });
 
       if (response.ok || response.status === 200) {
