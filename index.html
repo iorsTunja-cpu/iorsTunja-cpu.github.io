@@ -1373,37 +1373,74 @@ async function submitForm() {
     renderDiv.innerHTML = buildPdfHtml(data);
 
     // Wait for images to load
-    await new Promise(r => setTimeout(r, 300));
+    const imgs = renderDiv.querySelectorAll('img');
+    if (imgs.length > 0) {
+      await Promise.all(Array.from(imgs).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise(r => { img.onload = r; img.onerror = r; });
+      }));
+    }
+    await new Promise(r => setTimeout(r, 500));
 
     // Generate canvas from HTML
     const canvas = await html2canvas(renderDiv, {
       scale: 2,
       useCORS: true,
       logging: false,
-      backgroundColor: '#ffffff'
+      backgroundColor: '#ffffff',
+      allowTaint: true
     });
 
-    // Create PDF
+    // Create PDF with proper multi-page support
     const { jsPDF } = window.jspdf;
     const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgData = canvas.toDataURL('image/png');
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 8;
     const usableWidth = pageWidth - (margin * 2);
-    const imgHeight = (canvas.height * usableWidth) / canvas.width;
+    const usableHeight = pageHeight - (margin * 2);
 
-    let heightLeft = imgHeight;
-    let position = margin;
+    // Calculate the total height the image would be at usableWidth
+    const imgTotalHeight = (canvas.height * usableWidth) / canvas.width;
 
-    pdf.addImage(imgData, 'PNG', margin, position, usableWidth, imgHeight);
-    heightLeft -= (pageHeight - margin * 2);
+    // If it fits in one page, just add it
+    if (imgTotalHeight <= usableHeight) {
+      const imgData = canvas.toDataURL('image/png');
+      pdf.addImage(imgData, 'PNG', margin, margin, usableWidth, imgTotalHeight);
+    } else {
+      // Multi-page: slice the canvas into page-sized chunks
+      const scaleFactor = canvas.width / usableWidth;
+      const sliceHeight = Math.floor(usableHeight * scaleFactor); // px per page
 
-    while (heightLeft > 0) {
-      position = -(pageHeight - margin * 2) + margin + (imgHeight - heightLeft - (pageHeight - margin * 2));
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', margin, position - heightLeft + margin, usableWidth, imgHeight);
-      heightLeft -= (pageHeight - margin * 2);
+      let srcY = 0;
+      let pageNum = 0;
+
+      while (srcY < canvas.height) {
+        if (pageNum > 0) pdf.addPage();
+
+        const remainingHeight = canvas.height - srcY;
+        const currentSliceHeight = Math.min(sliceHeight, remainingHeight);
+
+        // Create a temporary canvas for this page slice
+        const pageCanvas = document.createElement('canvas');
+        pageCanvas.width = canvas.width;
+        pageCanvas.height = currentSliceHeight;
+        const ctx = pageCanvas.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+        ctx.drawImage(canvas,
+          0, srcY, canvas.width, currentSliceHeight,  // source
+          0, 0, canvas.width, currentSliceHeight       // destination
+        );
+
+        const pageImgData = pageCanvas.toDataURL('image/png');
+        const sliceHeightMm = (currentSliceHeight * usableWidth) / canvas.width;
+
+        pdf.addImage(pageImgData, 'PNG', margin, margin, usableWidth, sliceHeightMm);
+
+        srcY += currentSliceHeight;
+        pageNum++;
+      }
     }
 
     // Convert PDF to base64
