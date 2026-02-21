@@ -1,259 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IR — Gestión de Formularios</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-<style>
-  :root {
-    --ir-red: #c0392b;
-    --ir-red-dark: #962d22;
-    --ir-red-light: #e74c3c;
-    --ir-blue: #2471a3;
-    --ir-blue-dark: #1a5276;
-    --ir-blue-light: #5dade2;
-    --ir-yellow: #c4a916;
-    --ir-yellow-light: #f4d03f;
-    --ir-green: #6a9a1f;
-    --ir-green-light: #82b926;
-    --ir-navy: #1b2631;
-    --ir-pale: #f8f9fa;
-    --ir-white: #fafcfd;
-    --ir-gray-100: #f1f5f9;
-    --ir-gray-200: #e2e8f0;
-    --ir-gray-300: #cbd5e1;
-    --ir-gray-400: #94a3b8;
-    --ir-gray-600: #475569;
-    --ir-gray-800: #1e293b;
-    --radius: 16px;
-    --shadow-sm: 0 1px 3px rgba(27,38,49,0.08);
-    --shadow-md: 0 4px 20px rgba(27,38,49,0.1);
-    --shadow-lg: 0 12px 40px rgba(27,38,49,0.15);
-    --shadow-glow: 0 0 30px rgba(192,57,43,0.12);
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--ir-white);
-    color: var(--ir-gray-800);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Israel Rodríguez — Professional Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #c0392b; /* El rojo de tu logo */
+            --secondary: #2471a3; /* El azul de tu logo */
+            --bg: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --radius-lg: 20px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
 
-  .hero {
-    background: linear-gradient(135deg, var(--ir-navy) 0%, #2c3e50 40%, var(--ir-blue-dark) 100%);
-    padding: 45px 24px 65px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .hero::before {
-    content: '';
-    position: absolute;
-    top: -50%; left: -30%;
-    width: 160%; height: 200%;
-    background: 
-      radial-gradient(ellipse at 20% 50%, rgba(192,57,43,0.12) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 30%, rgba(36,113,163,0.15) 0%, transparent 50%),
-      radial-gradient(ellipse at 50% 80%, rgba(196,169,22,0.08) 0%, transparent 40%);
-    animation: float 20s ease-in-out infinite;
-  }
-  @keyframes float {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    33% { transform: translate(2%, -3%) rotate(1deg); }
-    66% { transform: translate(-1%, 2%) rotate(-1deg); }
-  }
-  .hero-content {
-    position: relative; z-index: 1;
-    max-width: 700px; margin: 0 auto;
-  }
-  .logo-img {
-    width: 180px; height: auto;
-    margin-bottom: 16px;
-    filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
-  }
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px; font-weight: 700;
-    color: white; margin-bottom: 6px;
-  }
-  .hero h1 span { color: var(--ir-red-light); }
-  .hero p {
-    font-size: 15px;
-    color: rgba(255,255,255,0.7);
-    font-weight: 300;
-  }
-  .hero .subtitle {
-    display: inline-block;
-    background: rgba(192,57,43,0.2);
-    border: 1px solid rgba(192,57,43,0.3);
-    padding: 6px 18px; border-radius: 30px;
-    font-size: 12px; font-weight: 500;
-    color: rgba(255,255,255,0.9);
-    margin-top: 16px;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-  }
-  .accent-bar {
-    height: 4px;
-    background: linear-gradient(90deg, var(--ir-red), var(--ir-yellow), var(--ir-green), var(--ir-blue));
-  }
-  .main {
-    max-width: 920px; margin: 0 auto;
-    padding: 30px 20px 60px;
-  }
-  .section-label {
-    font-size: 11px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--ir-gray-400); margin-bottom: 16px; padding-left: 4px;
-  }
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
-    gap: 16px;
-  }
-  .form-card {
-    background: white;
-    border: 1px solid var(--ir-gray-200);
-    border-radius: var(--radius);
-    padding: 24px; cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative; overflow: hidden;
-    text-decoration: none; color: inherit;
-    display: flex; flex-direction: column; gap: 12px;
-  }
-  .form-card::before {
-    content: '';
-    position: absolute; top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--card-accent, var(--ir-red)), var(--card-accent-end, var(--ir-blue)));
-    opacity: 0; transition: opacity 0.3s;
-  }
-  .form-card:hover {
-    border-color: transparent;
-    box-shadow: var(--shadow-lg), var(--shadow-glow);
-    transform: translateY(-4px);
-  }
-  .form-card:hover::before { opacity: 1; }
-  .form-card:active { transform: translateY(-2px); box-shadow: var(--shadow-md); }
-  .card-icon {
-    width: 48px; height: 48px; border-radius: 14px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; background: var(--card-bg, var(--ir-gray-100));
-  }
-  .card-title { font-size: 16px; font-weight: 700; line-height: 1.3; }
-  .card-desc { font-size: 13px; color: var(--ir-gray-400); line-height: 1.5; flex-grow: 1; }
-  .card-arrow {
-    display: flex; align-items: center; gap: 6px;
-    font-size: 12px; font-weight: 600; color: var(--ir-red);
-    opacity: 0; transform: translateX(-8px); transition: all 0.3s;
-    text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .form-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
-  .card-arrow svg { width: 16px; height: 16px; transition: transform 0.3s; }
-  .form-card:hover .card-arrow svg { transform: translateX(3px); }
-  .card-badge {
-    position: absolute; top: 12px; right: 12px;
-    font-size: 9px; font-weight: 700;
-    text-transform: uppercase; letter-spacing: 1px;
-    padding: 3px 8px; border-radius: 6px;
-  }
-  .card-badge.active { background: #dcfce7; color: #16a34a; }
-  .card-badge.soon { background: #fef3c7; color: #d97706; }
-  .form-card.disabled { opacity: 0.55; cursor: not-allowed; }
-  .form-card.disabled:hover { transform: none; box-shadow: var(--shadow-sm); border-color: var(--ir-gray-200); }
-  .form-card.disabled:hover::before { opacity: 0; }
-  .form-card.disabled:hover .card-arrow { opacity: 0; }
-  .footer {
-    text-align: center; padding: 30px 20px;
-    font-size: 12px; color: var(--ir-gray-400);
-    border-top: 1px solid var(--ir-gray-200);
-    max-width: 920px; margin: 0 auto;
-  }
-  .footer a { color: var(--ir-red); text-decoration: none; }
-  @media (max-width: 600px) {
-    .hero { padding: 35px 20px 55px; }
-    .hero h1 { font-size: 22px; }
-    .logo-img { width: 140px; }
-    .cards-grid { grid-template-columns: 1fr; }
-    .main { padding: 24px 16px 40px; }
-  }
-</style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        /* Header Estilo Dashboard */
+        .header {
+            background: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 3rem;
+        }
+
+        .logo-container img {
+            height: 80px;
+            margin-bottom: 1rem;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+            color: var(--text-main);
+            letter-spacing: -0.025em;
+        }
+
+        .header p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Grid de Contenido */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        /* Tarjetas Profesionales */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            border-color: var(--secondary);
+        }
+
+        .card::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 4px; height: 100%;
+            background: var(--secondary);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .card:hover::after { opacity: 1; }
+
+        .icon-box {
+            width: 56px;
+            height: 56px;
+            background: #f8fafc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 1.5rem;
+            transition: background 0.3s;
+        }
+
+        .card:hover .icon-box {
+            background: #eff6ff;
+        }
+
+        .card-title {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .card-desc {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: #dcfce7;
+            color: #166534;
+            width: fit-content;
+        }
+
+        .badge.soon {
+            background: #f1f5f9;
+            color: #64748b;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 4rem 1rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 640px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-content">
-    <img src="me.jpg" alt="Israel Rodriguez Logo" class="logo-img">
-    <h1><span>Israel Rodriguez</span></h1>
-    <p>Ingeniero de Sistemas — Gestión de Formularios</p>
-    <div class="subtitle">📋 Selecciona el formulario que necesitas</div>
-  </div>
-</div>
-
-<div class="accent-bar"></div>
-
-<div class="main">
-  <div class="section-label" style="margin-top:8px;">Formularios Disponibles</div>
-  <div class="cards-grid">
-
-    <a href="control_servicio.html" class="form-card" style="--card-accent: var(--ir-blue); --card-accent-end: var(--ir-blue-light); --card-bg: #eaf2f8;">
-      <span class="card-badge active">Activo</span>
-      <div class="card-icon">🔧</div>
-      <div class="card-title">Control de Servicio</div>
-      <div class="card-desc">Registro de servicios técnicos con firma digital, evidencia fotográfica y envío automático a Google Drive.</div>
-      <div class="card-arrow">Abrir formulario <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </a>
-
-    <div class="form-card disabled" style="--card-accent: var(--ir-green); --card-accent-end: var(--ir-green-light); --card-bg: #eafaf1;">
-      <span class="card-badge soon">Próximamente</span>
-      <div class="card-icon">📦</div>
-      <div class="card-title">Acta de Entrega</div>
-      <div class="card-desc">Documento de entrega de equipos, materiales o instalaciones con registro de inventario.</div>
-      <div class="card-arrow">Próximamente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+<header class="header">
+    <div class="logo-container">
+        <img src="me.jpg" alt="Israel Rodríguez">
     </div>
+    <h1>Gestión de Formularios Inteligentes</h1>
+    <p>Infraestructura digital para la captura de datos en campo</p>
+</header>
 
-    <div class="form-card disabled" style="--card-accent: var(--ir-yellow); --card-accent-end: var(--ir-yellow-light); --card-bg: #fef9e7;">
-      <span class="card-badge soon">Próximamente</span>
-      <div class="card-icon">📊</div>
-      <div class="card-title">Informe Técnico</div>
-      <div class="card-desc">Reporte técnico detallado con diagnóstico, hallazgos y recomendaciones.</div>
-      <div class="card-arrow">Próximamente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
+<main class="container">
+    <div class="grid">
+        <a href="control_servicio.html" class="card">
+            <span class="badge">Disponible</span>
+            <div style="height: 1rem;"></div>
+            <div class="icon-box">🔧</div>
+            <div class="card-title">Control de Servicio</div>
+            <p class="card-desc">Reportes técnicos con validación de identidad, geolocalización y firma digital.</p>
+            <div style="color: var(--secondary); font-weight: 600; font-size: 0.85rem;">Acceder ahora →</div>
+        </a>
+
+        <div class="card" style="opacity: 0.7; cursor: default;">
+            <span class="badge soon">En Desarrollo</span>
+            <div style="height: 1rem;"></div>
+            <div class="icon-box">📦</div>
+            <div class="card-title">Acta de Entrega</div>
+            <p class="card-desc">Gestión de activos y entrega de hardware con trazabilidad completa de inventario.</p>
+        </div>
+
+        <div class="card" style="opacity: 0.7; cursor: default;">
+            <span class="badge soon">En Desarrollo</span>
+            <div style="height: 1rem;"></div>
+            <div class="icon-box">📊</div>
+            <div class="card-title">Informe Técnico</div>
+            <p class="card-desc">Análisis avanzado de datos y generación de diagnósticos automatizados.</p>
+        </div>
     </div>
+</main>
 
-    <div class="form-card disabled" style="--card-accent: var(--ir-red); --card-accent-end: var(--ir-red-light); --card-bg: #fdedec;">
-      <span class="card-badge soon">Próximamente</span>
-      <div class="card-icon">💰</div>
-      <div class="card-title">Cotización</div>
-      <div class="card-desc">Generación de cotizaciones profesionales con ítems, cantidades y precios.</div>
-      <div class="card-arrow">Próximamente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <div class="form-card disabled" style="--card-accent: var(--ir-navy); --card-accent-end: var(--ir-blue-dark); --card-bg: #ebedef;">
-      <span class="card-badge soon">Próximamente</span>
-      <div class="card-icon">💾</div>
-      <div class="card-title">Cambio de Discos Duros</div>
-      <div class="card-desc">Formato de registro para cambio y disposición de discos duros con cadena de custodia.</div>
-      <div class="card-arrow">Próximamente <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </div>
-
-    <!-- ➕ PLANTILLA PARA AGREGAR NUEVOS FORMULARIOS
-    <a href="NOMBRE_ARCHIVO.html" class="form-card" style="--card-accent: var(--ir-blue); --card-accent-end: var(--ir-blue-light); --card-bg: #eaf2f8;">
-      <span class="card-badge active">Activo</span>
-      <div class="card-icon">📝</div>
-      <div class="card-title">Nombre del Formulario</div>
-      <div class="card-desc">Descripción breve.</div>
-      <div class="card-arrow">Abrir formulario <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div>
-    </a>
-    -->
-
-  </div>
-</div>
-
-<div class="footer">
-  Israel Rodriguez — Ingeniero de Sistemas · <a href="https://iorstunja-cpu.github.io">iorstunja-cpu.github.io</a>
-</div>
+<footer class="footer">
+    © 2026 Israel Rodríguez — Ingeniero de Sistemas<br>
+    <small>Optimizado para terminales móviles y tablets</small>
+</footer>
 
 </body>
 </html>
