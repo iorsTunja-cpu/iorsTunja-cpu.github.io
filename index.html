@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IR — Gestión de Formularios</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,500;0,9..40,700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ir-navy: #0c2340;
+    --ir-blue: #1a5f8a;
+    --ir-sky: #3a9fd5;
+    --ir-teal: #2ec4b6;
+    --ir-pale: #e8f4f8;
+    --ir-white: #fafcfd;
+    --ir-gray-100: #f1f5f9;
+    --ir-gray-200: #e2e8f0;
+    --ir-gray-400: #94a3b8;
+    --ir-gray-600: #475569;
+    --ir-gray-800: #1e293b;
+    --radius: 16px;
+    --shadow-sm: 0 1px 3px rgba(12,35,64,0.08);
+    --shadow-md: 0 4px 20px rgba(12,35,64,0.1);
+    --shadow-lg: 0 12px 40px rgba(12,35,64,0.15);
+    --shadow-glow: 0 0 30px rgba(26,95,138,0.15);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--ir-white);
+    color: var(--ir-gray-800);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* === HERO HEADER === */
+  .hero {
+    background: linear-gradient(135deg, var(--ir-navy) 0%, var(--ir-blue) 50%, var(--ir-sky) 100%);
+    padding: 50px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -30%;
+    width: 160%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(46,196,182,0.15) 0%, transparent 60%),
+                radial-gradient(ellipse at 70% 30%, rgba(58,159,213,0.2) 0%, transparent 50%);
+    animation: float 20s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33% { transform: translate(2%, -3%) rotate(1deg); }
+    66% { transform: translate(-1%, 2%) rotate(-1deg); }
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 70px;
+    height: 70px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 20px;
+    letter-spacing: 1px;
+  }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 8px;
+    letter-spacing: -0.3px;
+  }
+
+  .hero p {
+    font-size: 15px;
+    color: rgba(255,255,255,0.75);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  .hero .subtitle {
+    display: inline-block;
+    background: rgba(46,196,182,0.2);
+    border: 1px solid rgba(46,196,182,0.3);
+    padding: 6px 16px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.9);
+    margin-top: 14px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* === MAIN CONTENT === */
+  .main {
+    max-width: 900px;
+    margin: -30px auto 0;
+    padding: 0 20px 60px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--ir-gray-400);
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  /* === FORM CARDS GRID === */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+
+  .form-card {
+    background: white;
+    border: 1px solid var(--ir-gray-200);
+    border-radius: var(--radius);
+    padding: 24px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--card-accent, var(--ir-blue)), var(--card-accent-end, var(--ir-sky)));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .form-card:hover {
+    border-color: transparent;
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+    transform: translateY(-4px);
+  }
+
+  .form-card:hover::before {
+    opacity: 1;
+  }
+
+  .form-card:active {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  .card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: var(--card-bg, var(--ir-pale));
+    flex-shrink: 0;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ir-gray-800);
+    line-height: 1.3;
+  }
+
+  .card-desc {
+    font-size: 13px;
+    color: var(--ir-gray-400);
+    line-height: 1.5;
+    flex-grow: 1;
+  }
+
+  .card-arrow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ir-blue);
+    opacity: 0;
+    transform: translateX(-8px);
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .form-card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .card-arrow svg {
+    width: 16px;
+    height: 16px;
+    transition: transform 0.3s;
+  }
+
+  .form-card:hover .card-arrow svg {
+    transform: translateX(3px);
+  }
+
+  .card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: var(--ir-gray-100);
+    color: var(--ir-gray-400);
+  }
+
+  .card-badge.active {
+    background: #dcfce7;
+    color: #16a34a;
+  }
+
+  .card-badge.soon {
+    background: #fef3c7;
+    color: #d97706;
+  }
+
+  /* === DISABLED CARD === */
+  .form-card.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .form-card.disabled:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+    border-color: var(--ir-gray-200);
+  }
+
+  .form-card.disabled:hover::before {
+    opacity: 0;
+  }
+
+  .form-card.disabled:hover .card-arrow {
+    opacity: 0;
+  }
+
+  /* === FOOTER === */
+  .footer {
+    text-align: center;
+    padding: 30px 20px;
+    font-size: 12px;
+    color: var(--ir-gray-400);
+    border-top: 1px solid var(--ir-gray-200);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  .footer a {
+    color: var(--ir-blue);
+    text-decoration: none;
+  }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 600px) {
+    .hero { padding: 40px 20px 50px; }
+    .hero h1 { font-size: 22px; }
+    .cards-grid { grid-template-columns: 1fr; }
+    .main { padding: 0 16px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-content">
+    <div class="logo-badge">IR</div>
+    <h1>Israel Rodriguez</h1>
+    <p>Ingeniero de Sistemas — Gestión de Formularios</p>
+    <div class="subtitle">📋 Selecciona el formulario que necesitas</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="section-label" style="margin-top:24px;">Formularios Disponibles</div>
+
+  <div class="cards-grid">
+
+    <!-- 1. Control de Servicio (ACTIVO) -->
+    <a href="control_servicio.html" class="form-card" style="--card-accent: #1a5f8a; --card-accent-end: #2ec4b6; --card-bg: #e8f4f8;">
+      <span class="card-badge active">Activo</span>
+      <div class="card-icon">🔧</div>
+      <div class="card-title">Control de Servicio</div>
+      <div class="card-desc">Registro de servicios técnicos con firma digital, evidencia fotográfica y envío automático a Google Drive.</div>
+      <div class="card-arrow">
+        Abrir formulario
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+
+    <!-- 2. Acta de Entrega (PRÓXIMAMENTE) -->
+    <div class="form-card disabled" style="--card-accent: #8b5cf6; --card-accent-end: #a78bfa; --card-bg: #f3f0ff;">
+      <span class="card-badge soon">Próximamente</span>
+      <div class="card-icon">📦</div>
+      <div class="card-title">Acta de Entrega</div>
+      <div class="card-desc">Documento de entrega de equipos, materiales o instalaciones con registro de inventario.</div>
+      <div class="card-arrow">
+        Próximamente
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- 3. Informe Técnico (PRÓXIMAMENTE) -->
+    <div class="form-card disabled" style="--card-accent: #f59e0b; --card-accent-end: #fbbf24; --card-bg: #fffbeb;">
+      <span class="card-badge soon">Próximamente</span>
+      <div class="card-icon">📊</div>
+      <div class="card-title">Informe Técnico</div>
+      <div class="card-desc">Reporte técnico detallado con diagnóstico, hallazgos y recomendaciones.</div>
+      <div class="card-arrow">
+        Próximamente
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- 4. Cotización (PRÓXIMAMENTE) -->
+    <div class="form-card disabled" style="--card-accent: #10b981; --card-accent-end: #34d399; --card-bg: #ecfdf5;">
+      <span class="card-badge soon">Próximamente</span>
+      <div class="card-icon">💰</div>
+      <div class="card-title">Cotización</div>
+      <div class="card-desc">Generación de cotizaciones profesionales con items, cantidades y precios.</div>
+      <div class="card-arrow">
+        Próximamente
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- 5. Formato Cambio de Discos Duros (PRÓXIMAMENTE) -->
+    <div class="form-card disabled" style="--card-accent: #ef4444; --card-accent-end: #f87171; --card-bg: #fef2f2;">
+      <span class="card-badge soon">Próximamente</span>
+      <div class="card-icon">💾</div>
+      <div class="card-title">Cambio de Discos Duros</div>
+      <div class="card-desc">Formato de registro para cambio y disposición de discos duros con cadena de custodia.</div>
+      <div class="card-arrow">
+        Próximamente
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </div>
+
+    <!-- ➕ AGREGAR NUEVO (plantilla) -->
+    <!--
+    <a href="NOMBRE_ARCHIVO.html" class="form-card" style="--card-accent: #COLOR1; --card-accent-end: #COLOR2; --card-bg: #COLOR_BG;">
+      <span class="card-badge active">Activo</span>
+      <div class="card-icon">📝</div>
+      <div class="card-title">Nombre del Formulario</div>
+      <div class="card-desc">Descripción del formulario.</div>
+      <div class="card-arrow">
+        Abrir formulario
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </div>
+    </a>
+    -->
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Israel Rodriguez — Ingeniero de Sistemas · <a href="https://iorstunja-cpu.github.io">iorstunja-cpu.github.io</a>
+</div>
+
+</body>
+</html>
