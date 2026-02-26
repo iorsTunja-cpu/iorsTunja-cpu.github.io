@@ -1456,7 +1456,7 @@ async function submitForm() {
     pdf.save(fileName);
 
     // Send PDF as binary file via FormData (no base64, no CORS preflight issues)
-    const webhookUrl = 'https://n8n.srv996843.hstgr.cloud/webhook/recibir-servicio';
+    const webhookUrl = 'https://n8n.ingisraelrodriguez.com/webhook/recibir-servicio';
 
     const formData = new FormData();
     formData.append('file', pdfBlob, fileName);
